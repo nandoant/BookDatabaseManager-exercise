@@ -29,7 +29,7 @@ export class BookRepository {
         }
     }
 
-    async insertBook(book: Book): Promise<Book> {
+    async insertBook(book: Book):  Promise<Book> {
         const query = `
             INSERT INTO ${BookRepository.TABLE_NAME} 
             (title, author, publishedDate, isbn, pages, language, publisher) 
