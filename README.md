@@ -7,9 +7,9 @@ BookDatabaseManager-exercise é um projeto desenvolvido como parte de uma tarefa
 O projeto oferece os seguintes endpoints:
 - `POST /books`: Insere um novo livro no banco de dados.
 - `GET /books`: Recupera todos os livros do banco de dados.
-- `GET /books/:isbn`: Recupera um livro específico pelo seu ISBN.
-- `PUT /books/:isbn`: Atualiza os dados de um livro específico pelo seu ISBN.
-- `DELETE /books/:isbn`: Deleta um livro específico pelo seu ISBN.
+- `GET /books/:id`: Recupera um livro específico pelo seu ISBN.
+- `PUT /books/:id`: Atualiza os dados de um livro específico pelo seu ISBN.
+- `DELETE /books/:id`: Deleta um livro específico pelo seu ISBN.
 
 ## Tecnologias Utilizadas
 - **MySQL**: Banco de dados relacional para armazenamento dos registros dos livros.
