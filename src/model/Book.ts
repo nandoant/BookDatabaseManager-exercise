@@ -1,4 +1,5 @@
 export class Book{
+    private id: number;
     private title: string;
     private author: string;
     private publishedDate: string;
@@ -7,7 +8,8 @@ export class Book{
     private language:string;
     private publisher: string;
 
-    constructor( title: string, author: string, publishedDate: string, isbn: string, pages: number, language:string, publisher: string){
+    constructor(id:number ,title: string, author: string, publishedDate: string, isbn: string, pages: number, language:string, publisher: string){
+        this.id = id;
         this.title = title;
         this.author = author;
         this.publishedDate = publishedDate;
@@ -18,6 +20,7 @@ export class Book{
     }
 
     //getters
+    getId(): number { return this.id; }
     getTitle(): string { return this.title; }
     getAuthor(): string { return this.author; }
     getPublishedDate(): string { return this.publishedDate; }
@@ -27,6 +30,7 @@ export class Book{
     getPublisher(): string { return this.publisher; }
 
     //setters
+    setId(id: number): void { this.id = id; }
     setTitle(title: string): void { this.title = title; }
     setAuthor(author: string): void { this.author = author; }
     setPublishedDate(publishedDate: string): void { this.publishedDate = publishedDate; }

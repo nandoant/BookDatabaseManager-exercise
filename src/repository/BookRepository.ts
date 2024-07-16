@@ -11,10 +11,11 @@ export class BookRepository {
     async createTable(): Promise<void> {
         const query = `
         CREATE TABLE IF NOT EXISTS ${BookRepository.TABLE_NAME} (
+            id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
             author VARCHAR(100) NOT NULL,
             publishedDate DATE NOT NULL,
-            isbn VARCHAR(13) PRIMARY KEY,
+            isbn VARCHAR(13),
             pages INT NOT NULL,
             language VARCHAR(50) NOT NULL,
             publisher VARCHAR(100) NOT NULL
@@ -37,7 +38,7 @@ export class BookRepository {
             `;
 
         try {
-            await executarComandoSQL(query, [
+            const result = await executarComandoSQL(query, [
                 book.getTitle(), 
                 book.getAuthor(), 
                 book.getPublishedDate(), 
@@ -47,6 +48,7 @@ export class BookRepository {
                 book.getPublisher()
             ]);
             
+            book.setId(result.insertId);
             console.log('Book inserted successfully, ISBN:', book.getIsbn());
             return book;
         } catch (err) {
@@ -55,7 +57,7 @@ export class BookRepository {
         }
     }
 
-    async updateBook(book: Book, isbn:string): Promise<Book> {
+    async updateBook(book: Book): Promise<Book> {
         const query = `
             UPDATE ${BookRepository.TABLE_NAME} SET 
             title = ?, 
@@ -65,7 +67,7 @@ export class BookRepository {
             language = ?, 
             publisher = ? , 
             isbn = ?
-            WHERE isbn = ?
+            WHERE id = ?
             `;
 
         try {
@@ -77,7 +79,7 @@ export class BookRepository {
                 book.getLanguage(), 
                 book.getPublisher(), 
                 book.getIsbn(), 
-                isbn
+                book.getId()
             ]);
 
             console.log('Book updated successfully, ISBN:', book.getIsbn());
@@ -88,12 +90,12 @@ export class BookRepository {
         }
     }
 
-    async deleteBook(isbn: string): Promise<void> {
-        const query = `DELETE FROM ${BookRepository.TABLE_NAME} WHERE isbn = ?`;
+    async deleteBook(id: number): Promise<void> {
+        const query = `DELETE FROM ${BookRepository.TABLE_NAME} WHERE id = ?`;
 
         try {
-            await executarComandoSQL(query, [isbn]);
-            console.log('Book deleted successfully, ISBN:', isbn);
+            await executarComandoSQL(query, [id]);
+            console.log('Book deleted successfully, ID:', id);
         } catch (err) {
             console.error('Error deleting book:', err);
             throw err;
@@ -113,6 +115,35 @@ export class BookRepository {
 
             console.log('Book found successfully, ISBN:', isbn);
             return new Book(
+                result.id,
+                result.title, 
+                result.author, 
+                this.sanitizeDate(result.publishedDate),
+                result.isbn, 
+                result.pages, 
+                result.language, 
+                result.publisher
+            );
+        } catch (err) {
+            console.error('Error fetching book:', err);
+            throw err;
+        }
+    }
+
+    async getBookById(id: number): Promise<Book | null> {
+        const query = `SELECT * FROM ${BookRepository.TABLE_NAME} WHERE id = ?`;
+
+        try {
+            const [result] = await executarComandoSQL(query, [id]);
+            
+            if (!result) {
+                console.log('Book not found, ID:', id);
+                return null;
+            }
+
+            console.log('Book found successfully, ID:', id);
+            return new Book(
+                result.id,
                 result.title, 
                 result.author, 
                 this.sanitizeDate(result.publishedDate),
@@ -135,6 +166,7 @@ export class BookRepository {
             console.log('Books found successfully');
 
             return results.map((result:any) => new Book(
+                result.id,
                 result.title, 
                 result.author, 
                 this.sanitizeDate(result.publishedDate), 

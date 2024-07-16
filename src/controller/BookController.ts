@@ -8,6 +8,7 @@ export async function insertBook(req: Request, res: Response) {
     try {
         const bookData = req.body;
         const book = new Book(
+            0,
             bookData.title,
             bookData.author,
             bookData.publishedDate,
@@ -38,7 +39,7 @@ export async function getAllBooks(req: Request, res: Response) {
 
 export async function getBook(req: Request, res: Response) {
     try {
-        const book = await service.getBook(req.params.isbn);
+        const book = await service.getBookById(parseInt(req.params.id));
 
         if (!book) {
             return res.status(404).json({ message: "Book not found" });
@@ -53,8 +54,9 @@ export async function getBook(req: Request, res: Response) {
 export async function updateBook(req: Request, res: Response) {
     try {
         const bookData = req.body;
-        const isbn = req.params.isbn;
+        const id =  parseInt(req.params.id);
         const book = new Book(
+            id,
             bookData.title,
             bookData.author,
             bookData.publishedDate,
@@ -63,7 +65,7 @@ export async function updateBook(req: Request, res: Response) {
             bookData.language,
             bookData.publisher
         );
-        const updatedBook = await service.updateBook(book, isbn);
+        const updatedBook = await service.updateBook(book);
         res.status(200).json({ book: updatedBook });
     } catch (err: any) {
         if (err.message.includes("not found")) {
@@ -76,7 +78,7 @@ export async function updateBook(req: Request, res: Response) {
 
 export async function deleteBook(req: Request, res: Response) {
     try {
-        await service.deleteBook(req.params.isbn);
+        await service.deleteBook(parseInt(req.params.id));
         res.status(200).json({ message: 'Book deleted successfully' });
     } catch (err: any) {
         if (err.message.includes("not found")) {

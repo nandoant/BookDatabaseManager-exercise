@@ -12,9 +12,9 @@ function logInfo(){
 
 app.post("/books", insertBook);
 app.get("/books", getAllBooks);
-app.get("/books/:isbn", getBook);
-app.put("/books/:isbn", updateBook);
-app.delete("/books/:isbn", deleteBook);
+app.get("/books/:id", getBook);
+app.put("/books/:id", updateBook);
+app.delete("/books/:id", deleteBook);
 
 app.listen(PORT, logInfo);
 

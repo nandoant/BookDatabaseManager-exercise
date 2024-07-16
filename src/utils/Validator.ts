@@ -18,4 +18,10 @@ export class Validator{
             throw new Error('Invalid publication date');
         }
     }
+
+    public validadeID(id: number):void {
+        if(isNaN(id) || id <= 0){
+            throw new Error('ID must be a positive integer');
+        }
+    }
 }

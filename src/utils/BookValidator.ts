@@ -1,7 +1,7 @@
 import { Book } from "../model/Book";
 import { Validator } from "./Validator";
 
-export class BookValidator {
+export class BookValidator extends Validator{
     private static MAX_LENGTHS = {
         title: 255,
         author: 100,
@@ -15,14 +15,13 @@ export class BookValidator {
     //**
     private static ISBN_REGEX = /^(?:\d{10}|\d{13})$/;
 
-    private validator = new Validator();
 
     public validateBook(book: Book): void {
-        this.validator.validateString(book.getTitle(), 'Title', BookValidator.MAX_LENGTHS.title);
-        this.validator.validateString(book.getAuthor(), 'Author', BookValidator.MAX_LENGTHS.author);
-        this.validator.validateString(book.getLanguage(), 'Language', BookValidator.MAX_LENGTHS.language);
-        this.validator.validateString(book.getPublisher(), 'Publisher', BookValidator.MAX_LENGTHS.publisher);
-        this.validator.validateDate(book.getPublishedDate());
+        super.validateString(book.getTitle(), 'Title', BookValidator.MAX_LENGTHS.title);
+        super.validateString(book.getAuthor(), 'Author', BookValidator.MAX_LENGTHS.author);
+        super.validateString(book.getLanguage(), 'Language', BookValidator.MAX_LENGTHS.language);
+        super.validateString(book.getPublisher(), 'Publisher', BookValidator.MAX_LENGTHS.publisher);
+        super.validateDate(book.getPublishedDate());
         this.validateISBN(book.getIsbn());
         this.validatePages(book.getPages());
     }

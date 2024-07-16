@@ -14,40 +14,56 @@ export class BookService {
 
     public async insertBook(book: Book): Promise<Book> {
         this.validator.validateBook(book);
-        const existingBook = await this.getBook(book.getIsbn());
-
-        if (existingBook) 
-            throw new Error('Book already exists');
+        await this.verifyUniqueISBN(book.getIsbn());
 
         return this.repository.insertBook(book);
+    }
+
+    public async updateBook(book: Book): Promise<Book> {
+        this.validator.validateBook(book);
+        const existingBook = await this.verifyBookExistsById(book.getId());
+
+        // Verifica se o ISBN mudou e, se mudou, verifica se o novo ISBN é único
+        if (book.getIsbn() !== existingBook.getIsbn()) {
+            await this.verifyUniqueISBN(book.getIsbn());
+        }
+
+        return this.repository.updateBook(book);
+    }
+
+    public async deleteBook(id: number): Promise<void> {
+        this.validator.validadeID(id);
+        await this.verifyBookExistsById(id);
+
+        return this.repository.deleteBook(id);
     }
 
     public getAllBooks(): Promise<Book[]> {
         return this.repository.getAllBooks();
     }
 
-    public getBook(isbn: string): Promise<Book | null> {
+    public getBookById(id: number): Promise<Book | null> {
+        this.validator.validadeID(id);
+        return this.repository.getBookById(id);
+    }
+
+    private async getBookByISBN(isbn: string): Promise<Book | null> {
         this.validator.validateISBN(isbn);
         return this.repository.getBook(isbn);
     }
 
-    public async updateBook(book: Book, isbn:string): Promise<Book> {
-        this.validator.validateBook(book);
-        const existingBook = await this.getBook(isbn);
-
-        if (existingBook === null) 
-            throw new Error('Book not found');
-        
-        return this.repository.updateBook(book, isbn);
+    private async verifyUniqueISBN(isbn: string): Promise<void> {
+        const book = await this.getBookByISBN(isbn);
+        if (book !== null) {
+            throw new Error('Book already exists with this ISBN');
+        }
     }
 
-    public async deleteBook(isbn: string): Promise<void> {
-        this.validator.validateISBN(isbn);
-        const existingBook = await this.getBook(isbn);
-
-        if (existingBook === null) 
+    private async verifyBookExistsById(id: number): Promise<Book> {
+        const book = await this.getBookById(id);
+        if (book === null) {
             throw new Error('Book not found');
-
-        return this.repository.deleteBook(isbn);
+        }
+        return book;
     }
 }
